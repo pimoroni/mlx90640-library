@@ -7,7 +7,7 @@ endif
 
 all: examples
 
-examples: test step fbuf interp video
+examples: test step fbuf mmap interp video
 
 libMLX90640_API.so: functions/MLX90640_API.o functions/MLX90640_$(I2C_MODE)_I2C_Driver.o
 	$(CXX) -fPIC -shared $^ -o $@ $(I2C_LIBS)
@@ -20,7 +20,7 @@ functions/MLX90640_API.o functions/MLX90640_RPI_I2C_Driver.o functions/MLX90640_
 
 examples/test.o examples/step.o examples/fbuf.o examples/interp.o examples/video.o : CXXFLAGS+=-std=c++11
 
-test step fbuf interp video hotspot : CXXFLAGS+=-I. -std=c++11
+test step fbuf mmap interp video hotspot : CXXFLAGS+=-I. -std=c++11
 
 examples/lib/interpolate.o : CC=$(CXX) -std=c++11
 
@@ -36,13 +36,17 @@ step: examples/step.o libMLX90640_API.a
 fbuf: examples/fbuf.o examples/lib/fb.o libMLX90640_API.a
 	$(CXX) -L/home/pi/mlx90640-library $^ -o $@ $(I2C_LIBS)
 
+mmap: examples/mmap.o libMLX90640_API.a
+	$(CXX) -L/home/pi/mlx90640-library $^ -o $@ $(I2C_LIBS)
+
 interp: examples/interp.o examples/lib/interpolate.o examples/lib/fb.o libMLX90640_API.a
 	$(CXX) -L/home/pi/mlx90640-library $^ -o $@ $(I2C_LIBS)
 
 video: examples/video.o examples/lib/fb.o libMLX90640_API.a
 	$(CXX) -L/home/pi/mlx90640-library $^ -o $@ $(I2C_LIBS) -lavcodec -lavutil -lavformat
 
-bcm2835-1.55.tar.gz:	
+
+bcm2835-1.55.tar.gz:
 	wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.55.tar.gz
 
 bcm2835-1.55: bcm2835-1.55.tar.gz
