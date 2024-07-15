@@ -16,3 +16,6 @@ bcm2835-*
 *.py[cod]
 python/library/build
 python/library/dist
+
+cmake-build-*/
+build/
